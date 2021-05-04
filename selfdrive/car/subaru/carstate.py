@@ -52,10 +52,10 @@ class CarState(CarStateBase):
     ret.cruiseState.speed = cp_cam.vl["ES_DashStatus"]['Cruise_Set_Speed'] * CV.KPH_TO_MS
 
     # UDM Forester, Legacy: mph = 0
-    if self.car_fingerprint in [CAR.FORESTER_PREGLOBAL, CAR.LEGACY_PREGLOBAL] and cp.vl["Dash_State"]['Units'] == 0:
+    if self.car_fingerprint in [CAR.FORESTER_PREGLOBAL, CAR.LEGACY_PREGLOBAL, CAR.WRX_PREGLOBAL] and cp.vl["Dash_State"]['Units'] == 0:
       ret.cruiseState.speed *= CV.MPH_TO_KPH
     # EDM Global: mph = 1, 2; All Outback: mph = 1, UDM Forester: mph = 7
-    elif self.car_fingerprint not in [CAR.FORESTER_PREGLOBAL, CAR.LEGACY_PREGLOBAL] and cp.vl["Dash_State"]['Units'] in [1, 2, 7]:
+    elif self.car_fingerprint not in [CAR.FORESTER_PREGLOBAL, CAR.LEGACY_PREGLOBAL, CAR.WRX_PREGLOBAL] and cp.vl["Dash_State"]['Units'] in [1, 2, 7]:
       ret.cruiseState.speed *= CV.MPH_TO_KPH
 
     ret.seatbeltUnlatched = cp.vl["Dashlights"]['SEATBELT_FL'] == 1
@@ -111,7 +111,6 @@ class CarState(CarStateBase):
     checks = [
       # sig_address, frequency
       ("Throttle", 100),
-      ("Dashlights", 10),
       ("Brake_Pedal", 50),
       ("Wheel_Speeds", 50),
       ("Transmission", 100),
@@ -120,7 +119,6 @@ class CarState(CarStateBase):
 
     if CP.carFingerprint not in PREGLOBAL_CARS:
       signals += [
-        ("Steer_Error_1", "Steering_Torque", 0),
         ("Steer_Warning", "Steering_Torque", 0),
       ]
 
@@ -130,7 +128,7 @@ class CarState(CarStateBase):
         ("CruiseControl", 20),
       ]
 
-    if CP.carFingerprint == CAR.FORESTER_PREGLOBAL:
+    if CP.carFingerprint in [CAR.FORESTER_PREGLOBAL, CAR.WRX_PREGLOBAL]:
       checks += [
         ("Dashlights", 20),
         ("BodyInfo", 1),
